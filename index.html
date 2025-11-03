@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FX-Lot-Calculator-LIVE-v3.4-BlueReactive</title>
+<title>FX-Lot-Calculator-LIVE-v3.5</title>
 <style>
   :root{
     --bg1:#021b3a; --bg2:#000810; --panel:#0b1020; --ink:#e8f1ff; --muted:#9db3d9;
@@ -25,9 +24,9 @@
   }
   .wrap{max-width:1100px; margin:0 auto; padding:0 16px 48px;
         display:grid; grid-template-columns:260px 1fr 260px; gap:24px; align-items:start;}
-  .side{height:520px; display:flex; align-items:center; justify-content:center; filter:drop-shadow(0 24px 40px rgba(0,0,0,.55));}
+  .side{height:520px; display:flex; align-items:center; justify-content:center; filter:drop-shadow(0 24px 40px rgba(0,0,0,.55)); position:relative;}
   .icon{width:220px; height:220px; background:linear-gradient(145deg, rgba(0,157,255,.35), rgba(0,59,142,.5));
-        box-shadow: inset 0 0 35px rgba(0,0,0,.35), 0 18px 40px rgba(0,0,0,.35); border-radius:28px; position:relative;}
+        box-shadow: inset 0 0 35px rgba(0,0,0,.35), 0 18px 40px rgba(0,0,0,.35); border-radius:28px; position:relative; z-index:1;}
   .icon.calc:before,.icon.calc:after{content:""; position:absolute; left:15%; width:70%; height:12px; border-radius:999px;
         background:linear-gradient(90deg,#7fd6ff,#2fb8ff); top:64px; box-shadow:0 6px 18px rgba(55,208,255,.38)}
   .icon.calc:after{top:112px; width:50%; left:25%}
@@ -36,13 +35,15 @@
      border:6px solid rgba(160,220,255,.65); box-shadow:inset 0 0 24px rgba(55,208,255,.45)}
   .card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
         border:1px solid rgba(90,150,220,.2); border-radius:20px; padding:22px; max-width:560px; margin:0 auto;
-        box-shadow:0 20px 40px rgba(0,0,0,.38);}
+        box-shadow:0 20px 40px rgba(0,0,0,.38); position:relative;}
   label{display:block; margin:12px 0 6px; color:#cfe6ff; font-weight:600}
-  input, select{width:100%; padding:12px 14px; background:#0a1528; color:#fff; border:1px solid rgba(120,180,255,.22);
-                border-radius:12px; outline:none; font-size:15px; transition:box-shadow .2s,border-color .2s}
-  input:focus, select:focus{border-color:#37d0ff; box-shadow:0 0 0 4px rgba(55,208,255,.18)}
+  input, select{
+    width:100%; padding:12px 14px; background:#0a1528; color:#fff; border:1px solid rgba(120,180,255,.22);
+    border-radius:12px; outline:none; font-size:15px; transition:box-shadow .2s,border-color .2s;
+    box-shadow: 0 18px 28px -18px rgba(88,140,255,.45), inset 0 0 0 1px rgba(104,160,255,.18);
+  }
+  input:focus, select:focus{border-color:#37d0ff; box-shadow:0 0 0 4px rgba(55,208,255,.18), 0 18px 28px -18px rgba(88,140,255,.45), inset 0 0 0 1px rgba(104,160,255,.18)}
   .row{display:grid; grid-template-columns:1fr 1fr; gap:14px}
-  .toggle{display:flex; align-items:center; gap:8px; margin-top:6px}
   .status{font-size:13px; margin:6px 0; min-height:18px; text-align:left}
   .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
   button{width:100%; padding:14px 16px; border:none; border-radius:14px; color:#fff; cursor:pointer; font-weight:700; font-size:16px;
@@ -53,25 +54,72 @@
          background:rgba(0,179,255,.14); color:#bfeaff; font-weight:700; cursor:pointer}
   .retry:hover{background:rgba(0,179,255,.25)}
   .hint{color:var(--muted); font-size:12px; margin-top:4px}
-  .liveBadge{
-    width:12px; height:12px; border-radius:50%; margin-left:8px;
-    box-shadow:0 0 12px rgba(0,255,102,.6);
-    border:2px solid rgba(255,255,255,.15);
-    transition: background-color .4s linear, box-shadow .4s linear;
-    display:inline-block;
-  }
-  .inlineFlex{display:flex; align-items:center; gap:6px}
+  /* hide legacy badge support but keep element-safe */
+  .liveBadge{ display:none; }
+
   .lastUpdated{font-size:12px; color:#a7b9db; margin-top:4px}
   .fade{animation:fadeIn .45s ease}
   @keyframes fadeIn{from{opacity:.4} to{opacity:1}}
   @media (max-width:980px){.wrap{grid-template-columns:1fr; gap:16px}.side{display:none}}
   .valueCard{margin-top:10px; padding:10px; border-radius:12px; background:rgba(0,0,0,.25); border:1px solid rgba(120,180,255,.2)}
+
+  /* ---- New 4-section control panel ---- */
+  .mode-panel{
+    margin:12px 0 6px;
+    border-radius:14px;
+    padding:8px;
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+    border:1px solid rgba(90,150,220,.2);
+    position:relative;
+    box-shadow: 0 16px 36px rgba(0,0,0,.35);
+  }
+  .mode-panel::after{ /* subtle ambient glow */
+    content:""; position:absolute; inset:-6px; border-radius:16px; pointer-events:none;
+    box-shadow: 0 0 40px rgba(55,208,255,.25);
+  }
+  .mode-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:1fr 1fr;
+    gap:8px;
+  }
+  .seg{
+    height:44px; border-radius:12px; border:1px solid rgba(120,180,255,.22);
+    background:#0a1528; color:#9db3d9; font-weight:700; font-size:14px; letter-spacing:.3px;
+    transition: all .2s ease; cursor:pointer;
+    box-shadow: inset 0 0 0 1px rgba(104,160,255,.1);
+  }
+  .seg.active{
+    color:#fff;
+    background:linear-gradient(90deg,var(--b1),var(--b2));
+    box-shadow: 0 10px 24px rgba(0,126,255,.35), inset 0 0 0 1px rgba(104,160,255,.25);
+    border-color: rgba(120,180,255,.35);
+  }
+  .seg:hover{filter:brightness(1.06)}
+
+  /* ---- Countdown ring overlay ---- */
+  .ring-wrap{
+    position:absolute; width:260px; height:260px; display:flex; align-items:center; justify-content:center;
+  }
+  .ring-svg{
+    position:absolute; width:260px; height:260px; transform: rotate(90deg) scaleX(-1); /* CCW */
+    filter: drop-shadow(0 0 18px rgba(0,0,0,.35));
+  }
+  .ring-bg{ stroke: rgba(160,220,255,.15); stroke-width:10; fill:none; }
+  .ring-fg{ stroke: var(--green); stroke-width:10; fill:none; stroke-linecap:round; transition: stroke .2s linear; }
+  .ring-text{
+    position:absolute; text-align:center; font-size:14px; color:#a7b9db; line-height:1.25; pointer-events:none;
+  }
+  .ring-text .time{ display:block; font-size:24px; color:#e8f1ff; margin-top:6px; text-shadow:0 0 10px rgba(55,208,255,.2); }
+
 </style>
 </head>
 <body>
   <h1>Forex Lot Size Calculator</h1>
   <div class="wrap">
-    <div class="side"><div class="icon calc" title="calculator"></div></div>
+    <div class="side">
+      <div class="icon calc" title="calculator"></div>
+    </div>
 
     <div class="card">
       <div class="row">
@@ -101,10 +149,17 @@
         <option value="BTC/USD"><option value="ETH/USD"><option value="SOL/USD"><option value="XRP/USD"><option value="ADA/USD"><option value="DOGE/USD">
       </datalist>
 
-      <div class="toggle inlineFlex">
-        <input id="live" type="checkbox" checked>
-        <label for="live">Enable Live Price Auto‑Fill (30s refresh)</label>
-        <span id="liveBadge" class="liveBadge" title="Live price indicator"></span>
+      <!-- Hidden legacy toggle state to keep logic compatible -->
+      <input id="live" type="checkbox" checked style="display:none">
+
+      <!-- NEW 4-section control panel (replaces old checkbox section) -->
+      <div id="modePanel" class="mode-panel">
+        <div class="mode-grid">
+          <button class="seg active" data-role="fetch" data-value="live">LIVE FETCH</button>
+          <button class="seg" data-role="fetch" data-value="manual">MANUAL FETCH</button>
+          <button class="seg active" data-role="refresh" data-value="auto">AUTO REFRESH</button>
+          <button class="seg" data-role="refresh" data-value="manual">MANUAL REFRESH</button>
+        </div>
       </div>
 
       <label for="entry">Entry Price</label>
@@ -132,7 +187,7 @@
         <div class="hint">FX auto: ≈10 (quote) or 1000 for JPY-quotes. For XAU/crypto provide your broker's pip value.</div>
       </div>
 
-      <div class="toggle">
+      <div class="toggle" style="display:none">
         <input id="sameCcy" type="checkbox" checked>
         <label for="sameCcy">My account currency matches the pair's QUOTE currency</label>
       </div>
@@ -149,28 +204,85 @@
       <div class="hint">FX pip size: 0.0001 (most) or 0.01 (JPY-quoted). Metals/crypto differ — enter manual pip value if needed.</div>
     </div>
 
-    <div class="side"><div class="icon coin" title="coin"></div></div>
+    <div class="side">
+      <div class="icon coin" title="coin"></div>
+      <!-- Countdown ring overlay -->
+      <div class="ring-wrap" aria-hidden="true">
+        <svg class="ring-svg" viewBox="0 0 260 260">
+          <circle class="ring-bg" cx="130" cy="130" r="110"></circle>
+          <circle id="ringFg" class="ring-fg" cx="130" cy="130" r="110" stroke-dasharray="691" stroke-dashoffset="0"></circle>
+        </svg>
+        <div class="ring-text">
+          <div>Price Refresh in:</div>
+          <span id="ringTime" class="time">00:30</span>
+        </div>
+      </div>
+    </div>
   </div>
 
 <script>
 const DEBUG = true;
-function log(...args){ if(DEBUG) console.log("[FX v3.4]", ...args); }
+function log(...args){ if(DEBUG) console.log("[FX v3.5]", ...args); }
 
 let timer=null, elapsed=0;
 const qs = id => document.getElementById(id);
 const status = (t,c='warn') => { const el=qs('status'); el.className='status '+c; el.textContent=t; };
 const nowTime = () => new Date().toLocaleTimeString();
-const badge = qs('liveBadge');
-function setBadgeColor(sec){
-  // 0–10 green, 10–25 amber, 25–30 red
-  let color = getComputedStyle(document.documentElement).getPropertyValue('--green');
-  if(sec >= 25) color = getComputedStyle(document.documentElement).getPropertyValue('--red');
-  else if(sec >= 10) color = getComputedStyle(document.documentElement).getPropertyValue('--amber');
-  badge.style.backgroundColor = color.trim();
-  badge.style.boxShadow = `0 0 12px ${color.trim()}`;
-  badge.title = `Live indicator • ${sec}s since last update`;
+
+// state for new controls
+const state = {
+  liveFetch: true,
+  autoRefresh: true,
+  pairedMode: true
+};
+
+// ╭───────────────────────────────╮
+// │ Countdown ring + color lerp   │
+// ╰───────────────────────────────╯
+const R = 110;
+const CIRC = Math.round(2 * Math.PI * R); // ~691
+const ring = document.getElementById('ringFg');
+const ringTime = document.getElementById('ringTime');
+
+function lerp(a,b,t){ return a + (b-a)*t; }
+function mixColor(c1, c2, t){
+  // c1,c2 as [r,g,b]; return css rgb()
+  const r = Math.round(lerp(c1[0], c2[0], t));
+  const g = Math.round(lerp(c1[1], c2[1], t));
+  const b = Math.round(lerp(c1[2], c2[2], t));
+  return `rgb(${r},${g},${b})`;
+}
+const GREEN=[0,255,102], AMBER=[255,170,0], RED=[255,0,51];
+
+function setRing(sec){
+  // progress from 0..30; we want countdown CCW, so offset grows with sec
+  const rem = Math.max(0, 30 - sec);
+  ringTime.textContent = `00:${String(rem).padStart(2,'0')}`;
+
+  const progress = sec/30; // 0..1
+  // color: first half green->amber, second half amber->red
+  let color;
+  if(progress < 0.5){
+    color = mixColor(GREEN, AMBER, progress/0.5);
+  } else {
+    color = mixColor(AMBER, RED, (progress-0.5)/0.5);
+  }
+  ring.style.stroke = color;
+
+  // dashoffset: full circle is CIRC; CCW via transform on SVG, so we use increasing offset
+  const offset = Math.min(CIRC, Math.max(0, CIRC * (sec/30)));
+  ring.setAttribute('stroke-dasharray', CIRC);
+  ring.setAttribute('stroke-dashoffset', offset);
 }
 
+// kept for compatibility; now proxies to ring color
+function setBadgeColor(sec){
+  setRing(sec);
+}
+
+// ╭───────────────────────────────╮
+// │ Pair parser and rates         │
+// ╰───────────────────────────────╯
 function parsePair(v){
   if(!v) return null;
   v=v.trim().toUpperCase().replace(/\\s+/g,'');
@@ -202,26 +314,19 @@ async function exhRate(base, quote){
   }catch(e){ log("exh error", e); }
   return null;
 }
-async function getRate(base, quote) {
-  try {
-    const r = await fetch(`https://api.exchangerate.host/latest?base=${base}&symbols=${quote}`);
-    const j = await r.json();
-    if (j && j.rates && typeof j.rates[quote] === 'number') {
-      log("rate via exchangerate.host", base, quote, j.rates[quote]);
-      return j.rates[quote];
-    } else {
-      log("rate not found", base, quote, j);
-    }
-  } catch (e) {
-    log("fetch error", e);
-  }
+async function getRate(base, quote){
+  let rate = await erapiRate(base, quote);
+  if(rate){ log("rate via erapi", base, quote, rate); return rate; }
+  rate = await exhRate(base, quote);
+  if(rate){ log("rate via exchangerate.host", base, quote, rate); return rate; }
+  log("rate unavailable", base, quote);
   return null;
 }
 
 const cache = {}; // pair code -> last good rate
 
 async function updateLive(){
-  if(!qs('live').checked) return;
+  if(!state.liveFetch) return;
   const p = parsePair(qs('pair').value);
   if(!p){ status('Enter a valid pair like GBP/JPY','bad'); return; }
   status('Fetching live price…');
@@ -230,6 +335,7 @@ async function updateLive(){
     cache[p.code] = rate;
     const dec = (p.q==='JPY'||isMetal(p.b)) ? 3 : 5;
     qs('entry').value = rate.toFixed(dec);
+    // reactive pulse
     qs('entry').classList.add('fade'); setTimeout(()=>qs('entry').classList.remove('fade'), 450);
     status(`✅ ${p.code} = ${rate.toFixed(dec)}  (${nowTime()})`,'ok');
     qs('lastUpdated').textContent = `⏱ Last Updated: ${nowTime()}`;
@@ -250,7 +356,7 @@ async function updateLive(){
 
 function startTimer(){
   if(timer) clearInterval(timer);
-  if(qs('live').checked){
+  if(state.autoRefresh && state.liveFetch){
     timer = setInterval(() => {
       elapsed += 1;
       setBadgeColor(elapsed);
@@ -258,35 +364,68 @@ function startTimer(){
         updateLive();
       }
     }, 1000);
+  } else {
+    // still update ring visually even if not auto refreshing
+    timer = setInterval(() => {
+      // in manual modes, keep ring at 30 (no countdown)
+      setRing(0);
+    }, 1000);
   }
 }
 
-async function showLotValues(p, acct, lotSize){
-  if(!p || !acct){ qs('valueCard').style.display='none'; return; }
-  if(isMetal(p.b) || isCrypto(p.b)){ qs('valueCard').style.display='none'; return; }
-  const baseToAcct = await getRate(p.b, acct);
-  if(!baseToAcct){ qs('valueCard').style.display='none'; return; }
-  const perLot = 100000 * baseToAcct;
-  const tradeVal = perLot * (Number(lotSize)||0);
-  const sym = acct==='GBP'?'£':acct==='USD'?'$':acct==='EUR'?'€':acct==='JPY'?'¥':acct==='AUD'?'A$':acct==='CAD'?'C$':acct==='NZD'?'NZ$':acct==='CHF'?'₣':'$';
-  qs('valueCard').innerHTML = `💷 1.00 lot = <b>${sym}${perLot.toLocaleString(undefined,{maximumFractionDigits:0})} ${acct}</b><br>
-                        💷 Your trade size (${(Number(lotSize)||0).toFixed(2)} lots) = <b>${sym}${tradeVal.toLocaleString(undefined,{maximumFractionDigits:0})} ${acct}</b>`;
-  qs('valueCard').style.display='block';
-}
+// ---- Control panel logic ----
+const panel = document.getElementById('modePanel');
+panel.addEventListener('click', (ev) => {
+  const btn = ev.target.closest('.seg');
+  if(!btn) return;
+  const role = btn.getAttribute('data-role');
+  const val = btn.getAttribute('data-value');
 
+  if(state.pairedMode){
+    // first click pairs both rows
+    const live = (role === 'fetch') ? (val === 'live')
+                : (role === 'refresh') ? (val === 'auto')
+                : true;
+    state.liveFetch = live;
+    state.autoRefresh = live;
+    state.pairedMode = false; // future clicks manual
+  } else {
+    if(role === 'fetch'){
+      state.liveFetch = (val === 'live');
+    } else if(role === 'refresh'){
+      state.autoRefresh = (val === 'auto');
+    }
+  }
+  // reflect hidden legacy checkbox for compatibility
+  qs('live').checked = state.liveFetch;
+
+  // update UI classes
+  for(const el of panel.querySelectorAll('.seg')) el.classList.remove('active');
+  const sel = [
+    `[data-role="fetch"][data-value="${state.liveFetch?'live':'manual'}"]`,
+    `[data-role="refresh"][data-value="${state.autoRefresh?'auto':'manual'}"]`
+  ];
+  sel.forEach(s => panel.querySelector(s).classList.add('active'));
+
+  if(!state.autoRefresh || !state.liveFetch){
+    status('Manual mode enabled.','warn');
+  }
+  startTimer();
+});
+
+// Original listeners adapted
 qs('pair').addEventListener('input', () => {
   const p = parsePair(qs('pair').value);
   const showManual = p && (isMetal(p.b)||isCrypto(p.b));
   qs('pipManualBox').style.display = showManual ? 'block':'none';
-  updateLive(); startTimer();
+  if(state.liveFetch){
+    updateLive();
+    startTimer();
+  }
 });
-qs('live').addEventListener('change', () => {
-  if(qs('live').checked){ updateLive(); startTimer(); }
-  else { if(timer) clearInterval(timer); status('Manual mode enabled.','warn'); }
-});
-qs('sameCcy').addEventListener('change', () => { qs('convBox').style.display = qs('sameCcy').checked ? 'none':'block'; if(qs('live').checked) updateLive(); });
 qs('retry').addEventListener('click', () => { elapsed = 29; setBadgeColor(elapsed); updateLive(); });
 
+// Lot size calculation (unchanged)
 qs('calc').addEventListener('click', async () => {
   const bal = Number(qs('balance').value);
   const riskPct = Number(qs('risk').value);
@@ -330,6 +469,20 @@ qs('calc').addEventListener('click', async () => {
   await showLotValues(p, acct, lot);
 });
 
+async function showLotValues(p, acct, lotSize){
+  if(!p || !acct){ qs('valueCard').style.display='none'; return; }
+  if(isMetal(p.b) || isCrypto(p.b)){ qs('valueCard').style.display='none'; return; }
+  const baseToAcct = await getRate(p.b, acct);
+  if(!baseToAcct){ qs('valueCard').style.display='none'; return; }
+  const perLot = 100000 * baseToAcct;
+  const tradeVal = perLot * (Number(lotSize)||0);
+  const sym = acct==='GBP'?'£':acct==='USD'?'$':acct==='EUR'?'€':acct==='JPY'?'¥':acct==='AUD'?'A$':acct==='CAD'?'C$':acct==='NZD'?'NZ$':acct==='CHF'?'₣':'$';
+  qs('valueCard').innerHTML = `💷 1.00 lot = <b>${sym}${perLot.toLocaleString(undefined,{maximumFractionDigits:0})} ${acct}</b><br>
+                        💷 Your trade size (${(Number(lotSize)||0).toFixed(2)} lots) = <b>${sym}${tradeVal.toLocaleString(undefined,{maximumFractionDigits:0})} ${acct}</b>`;
+  qs('valueCard').style.display='block';
+}
+
+// init
 (function restore(){
   try{
     const s = JSON.parse(localStorage.getItem("fx_v34_state")||"{}");
@@ -339,7 +492,7 @@ qs('calc').addEventListener('click', async () => {
     if(s.pair) qs('pair').value = s.pair;
   }catch(_){}
   setBadgeColor(0);
-  if(qs('pair').value) updateLive();
+  if(qs('pair').value && state.liveFetch) updateLive();
   startTimer();
 })();
 ['balance','acct','risk','pair'].forEach(id => {
