@@ -202,12 +202,19 @@ async function exhRate(base, quote){
   }catch(e){ log("exh error", e); }
   return null;
 }
-async function getRate(base, quote){
-  let rate = await erapiRate(base, quote);
-  if(rate){ log("rate via erapi", base, quote, rate); return rate; }
-  rate = await exhRate(base, quote);
-  if(rate){ log("rate via exchangerate.host", base, quote, rate); return rate; }
-  log("rate unavailable", base, quote);
+async function getRate(base, quote) {
+  try {
+    const r = await fetch(`https://api.exchangerate.host/latest?base=${base}&symbols=${quote}`);
+    const j = await r.json();
+    if (j && j.rates && typeof j.rates[quote] === 'number') {
+      log("rate via exchangerate.host", base, quote, j.rates[quote]);
+      return j.rates[quote];
+    } else {
+      log("rate not found", base, quote, j);
+    }
+  } catch (e) {
+    log("fetch error", e);
+  }
   return null;
 }
 
