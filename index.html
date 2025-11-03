@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FX-Lot-Calculator-LIVE-v3.4-BlueReactive</title>
+<title>FX-Lot-Calculator-LIVE-v3.5-alpha 1</title>
 <style>
   :root{
     --bg1:#021b3a; --bg2:#000810; --panel:#0b1020; --ink:#e8f1ff; --muted:#9db3d9;
@@ -13,9 +12,9 @@
   }
   *{box-sizing:border-box}
   body{
-    margin:0; font-family:-apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--ink);
-    background: radial-gradient(1200px 700px at 12% 10%, #09264e 0%, #061737 55%, #031020 100%),
-                linear-gradient(180deg,var(--bg1),var(--bg2)); min-height:100vh;
+    margin:0; font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink);
+    background:radial-gradient(1200px 700px at 12% 10%,#09264e 0%,#061737 55%,#031020 100%),
+               linear-gradient(180deg,var(--bg1),var(--bg2)); min-height:100vh;
   }
   h1{
     margin:30px 0 10px; text-align:center; font-size:44px;
@@ -23,336 +22,160 @@
     -webkit-background-clip:text; background-clip:text; color:transparent;
     text-shadow:0 0 18px rgba(55,208,255,.25);
   }
-  .wrap{max-width:1100px; margin:0 auto; padding:0 16px 48px;
-        display:grid; grid-template-columns:260px 1fr 260px; gap:24px; align-items:start;}
-  .side{height:520px; display:flex; align-items:center; justify-content:center; filter:drop-shadow(0 24px 40px rgba(0,0,0,.55));}
-  .icon{width:220px; height:220px; background:linear-gradient(145deg, rgba(0,157,255,.35), rgba(0,59,142,.5));
-        box-shadow: inset 0 0 35px rgba(0,0,0,.35), 0 18px 40px rgba(0,0,0,.35); border-radius:28px; position:relative;}
-  .icon.calc:before,.icon.calc:after{content:""; position:absolute; left:15%; width:70%; height:12px; border-radius:999px;
-        background:linear-gradient(90deg,#7fd6ff,#2fb8ff); top:64px; box-shadow:0 6px 18px rgba(55,208,255,.38)}
-  .icon.calc:after{top:112px; width:50%; left:25%}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px 48px;
+        display:grid;grid-template-columns:260px 1fr 260px;gap:24px;align-items:start;}
+  .side{height:520px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 24px 40px rgba(0,0,0,.55));}
+  .icon{width:220px;height:220px;background:linear-gradient(145deg,rgba(0,157,255,.35),rgba(0,59,142,.5));
+        box-shadow:inset 0 0 35px rgba(0,0,0,.35),0 18px 40px rgba(0,0,0,.35);border-radius:28px;position:relative;}
+  .icon.calc:before,.icon.calc:after{content:"";position:absolute;left:15%;width:70%;height:12px;border-radius:999px;
+        background:linear-gradient(90deg,#7fd6ff,#2fb8ff);top:64px;box-shadow:0 6px 18px rgba(55,208,255,.38)}
+  .icon.calc:after{top:112px;width:50%;left:25%}
   .icon.coin{border-radius:50%}
-  .icon.coin:before{content:""; position:absolute; inset:14px; border-radius:50%;
-     border:6px solid rgba(160,220,255,.65); box-shadow:inset 0 0 24px rgba(55,208,255,.45)}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
-        border:1px solid rgba(90,150,220,.2); border-radius:20px; padding:22px; max-width:560px; margin:0 auto;
+  .icon.coin:before{content:"";position:absolute;inset:14px;border-radius:50%;
+     border:6px solid rgba(160,220,255,.65);box-shadow:inset 0 0 24px rgba(55,208,255,.45)}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));
+        border:1px solid rgba(90,150,220,.2);border-radius:20px;padding:22px;max-width:560px;margin:0 auto;
         box-shadow:0 20px 40px rgba(0,0,0,.38);}
-  label{display:block; margin:12px 0 6px; color:#cfe6ff; font-weight:600}
-  input, select{width:100%; padding:12px 14px; background:#0a1528; color:#fff; border:1px solid rgba(120,180,255,.22);
-                border-radius:12px; outline:none; font-size:15px; transition:box-shadow .2s,border-color .2s}
-  input:focus, select:focus{border-color:#37d0ff; box-shadow:0 0 0 4px rgba(55,208,255,.18)}
-  .row{display:grid; grid-template-columns:1fr 1fr; gap:14px}
-  .toggle{display:flex; align-items:center; gap:8px; margin-top:6px}
-  .status{font-size:13px; margin:6px 0; min-height:18px; text-align:left}
+  label{display:block;margin:12px 0 6px;color:#cfe6ff;font-weight:600}
+  input,select{width:100%;padding:12px 14px;background:#0a1528;color:#fff;border:1px solid rgba(120,180,255,.22);
+                border-radius:12px;outline:none;font-size:15px;transition:box-shadow .2s,border-color .2s}
+  input:focus,select:focus{border-color:#37d0ff;box-shadow:0 0 0 4px rgba(55,208,255,.18)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .toggle{display:flex;align-items:center;gap:8px;margin-top:6px}
+  .status{font-size:13px;margin:6px 0;min-height:18px;text-align:left}
   .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-  button{width:100%; padding:14px 16px; border:none; border-radius:14px; color:#fff; cursor:pointer; font-weight:700; font-size:16px;
-         background:linear-gradient(90deg,var(--b1),var(--b2)); box-shadow:0 10px 24px rgba(0,126,255,.35)}
+  button{width:100%;padding:14px 16px;border:none;border-radius:14px;color:#fff;cursor:pointer;font-weight:700;font-size:16px;
+         background:linear-gradient(90deg,var(--b1),var(--b2));box-shadow:0 10px 24px rgba(0,126,255,.35)}
   button:hover{box-shadow:0 12px 28px rgba(0,126,255,.45)}
   .input-with-btn{position:relative}
-  .retry{position:absolute; right:6px; top:6px; padding:8px 10px; border:none; border-radius:10px;
-         background:rgba(0,179,255,.14); color:#bfeaff; font-weight:700; cursor:pointer}
+
+  /* --- NEW unified field wrapper for Entry Price (aligns glow) --- */
+  .form-field{
+    position:relative;
+    border-radius:12px;
+  }
+  .form-field input{
+    position:relative;
+    z-index:2;
+    width:100%;
+    background:#0a1528;
+    color:#fff;
+    border:1px solid rgba(120,180,255,.22);
+    border-radius:inherit;
+    padding:12px 40px 12px 14px;
+    font-size:15px;
+    outline:none;
+  }
+  .form-field::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    z-index:1;
+    pointer-events:none;
+    box-shadow:0 0 0 1px rgba(104,160,255,.18) inset, 0 18px 28px -18px rgba(88,140,255,.45);
+    opacity:.8;
+    transition:opacity .3s ease, box-shadow .3s ease;
+  }
+  /* reactive pulse */
+  .form-field.reactive-glow::after{
+    opacity:1;
+    box-shadow:0 0 0 2px rgba(55,208,255,.5) inset, 0 0 25px 5px rgba(55,208,255,.4);
+  }
+  .retry{position:absolute;right:6px;top:6px;padding:8px 10px;border:none;border-radius:10px;
+         background:rgba(0,179,255,.14);color:#bfeaff;font-weight:700;cursor:pointer;z-index:3}
   .retry:hover{background:rgba(0,179,255,.25)}
-  .hint{color:var(--muted); font-size:12px; margin-top:4px}
+
+  .hint{color:var(--muted);font-size:12px;margin-top:4px}
   .liveBadge{
-    width:12px; height:12px; border-radius:50%; margin-left:8px;
+    width:12px;height:12px;border-radius:50%;margin-left:8px;
     box-shadow:0 0 12px rgba(0,255,102,.6);
     border:2px solid rgba(255,255,255,.15);
-    transition: background-color .4s linear, box-shadow .4s linear;
+    transition:background-color .4s linear,box-shadow .4s linear;
     display:inline-block;
   }
-  .inlineFlex{display:flex; align-items:center; gap:6px}
-  .lastUpdated{font-size:12px; color:#a7b9db; margin-top:4px}
+  .inlineFlex{display:flex;align-items:center;gap:6px}
+  .lastUpdated{font-size:12px;color:#a7b9db;margin-top:4px}
   .fade{animation:fadeIn .45s ease}
-  @keyframes fadeIn{from{opacity:.4} to{opacity:1}}
-  @media (max-width:980px){.wrap{grid-template-columns:1fr; gap:16px}.side{display:none}}
-  .valueCard{margin-top:10px; padding:10px; border-radius:12px; background:rgba(0,0,0,.25); border:1px solid rgba(120,180,255,.2)}
+  @keyframes fadeIn{from{opacity:.4}to{opacity:1}}
+  @media(max-width:980px){.wrap{grid-template-columns:1fr;gap:16px}.side{display:none}}
+  .valueCard{margin-top:10px;padding:10px;border-radius:12px;background:rgba(0,0,0,.25);border:1px solid rgba(120,180,255,.2)}
 </style>
 </head>
 <body>
-  <h1>Forex Lot Size Calculator</h1>
-  <div class="wrap">
-    <div class="side"><div class="icon calc" title="calculator"></div></div>
+<h1>Forex Lot Size Calculator</h1>
+<div class="wrap">
+  <div class="side"><div class="icon calc" title="calculator"></div></div>
 
-    <div class="card">
-      <div class="row">
-        <div>
-          <label for="balance">Account Balance</label>
-          <input id="balance" type="number" placeholder="e.g. 1000">
-        </div>
-        <div>
-          <label for="acct">Account Currency</label>
-          <select id="acct">
-            <option>GBP</option><option>USD</option><option>EUR</option><option>JPY</option>
-            <option>AUD</option><option>CAD</option><option>NZD</option><option>CHF</option><option>SGD</option><option>ZAR</option>
-          </select>
-        </div>
+  <div class="card">
+    <!-- unchanged fields -->
+    <div class="row">
+      <div><label for="balance">Account Balance</label><input id="balance" type="number" placeholder="e.g. 1000"></div>
+      <div><label for="acct">Account Currency</label>
+        <select id="acct"><option>GBP</option><option>USD</option><option>EUR</option><option>JPY</option>
+          <option>AUD</option><option>CAD</option><option>NZD</option><option>CHF</option><option>SGD</option><option>ZAR</option></select>
       </div>
-
-      <label for="risk">Risk Percentage (%)</label>
-      <input id="risk" type="number" placeholder="e.g. 2">
-
-      <label for="pair">Currency / Crypto / Metal Pair</label>
-      <input id="pair" list="pairs" placeholder="Type or pick e.g. GBP/JPY, BTC/USD, XAU/USD">
-      <datalist id="pairs">
-        <option value="EUR/USD"><option value="GBP/USD"><option value="USD/JPY"><option value="AUD/USD"><option value="USD/CAD"><option value="USD/CHF">
-        <option value="EUR/GBP"><option value="EUR/JPY"><option value="GBP/JPY"><option value="AUD/JPY"><option value="EUR/AUD"><option value="EUR/CAD"><option value="GBP/AUD"><option value="CAD/JPY"><option value="NZD/USD"><option value="AUD/NZD">
-        <option value="USD/ZAR"><option value="USD/TRY"><option value="USD/MXN"><option value="USD/SGD"><option value="USD/HKD"><option value="EUR/TRY"><option value="GBP/ZAR"><option value="EUR/SGD">
-        <option value="XAU/USD"><option value="XAG/USD"><option value="XAU/GBP"><option value="XAU/EUR">
-        <option value="BTC/USD"><option value="ETH/USD"><option value="SOL/USD"><option value="XRP/USD"><option value="ADA/USD"><option value="DOGE/USD">
-      </datalist>
-
-      <div class="toggle inlineFlex">
-        <input id="live" type="checkbox" checked>
-        <label for="live">Enable Live Price Auto‑Fill (30s refresh)</label>
-        <span id="liveBadge" class="liveBadge" title="Live price indicator"></span>
-      </div>
-
-      <label for="entry">Entry Price</label>
-      <div class="input-with-btn">
-        <input id="entry" type="number" step="0.00001" placeholder="auto">
-        <button id="retry" class="retry" title="Retry live price">🔄</button>
-      </div>
-      <div id="status" class="status"></div>
-      <div id="lastUpdated" class="lastUpdated"></div>
-
-      <div class="row">
-        <div>
-          <label for="sl">Stop Loss Price</label>
-          <input id="sl" type="number" step="0.00001" placeholder="e.g. 1.08300">
-        </div>
-        <div>
-          <label for="tp">Take Profit (optional)</label>
-          <input id="tp" type="number" step="0.00001" placeholder="e.g. 1.09500">
-        </div>
-      </div>
-
-      <div id="pipManualBox" style="display:none">
-        <label for="pipValManual">Pip value per 1.00 lot (in QUOTE currency)</label>
-        <input id="pipValManual" type="number" step="0.0001" placeholder="Set for metals/crypto if needed">
-        <div class="hint">FX auto: ≈10 (quote) or 1000 for JPY-quotes. For XAU/crypto provide your broker's pip value.</div>
-      </div>
-
-      <div class="toggle">
-        <input id="sameCcy" type="checkbox" checked>
-        <label for="sameCcy">My account currency matches the pair's QUOTE currency</label>
-      </div>
-      <div id="convBox" style="display:none">
-        <label for="conv">Conversion rate (QUOTE → Account)</label>
-        <input id="conv" type="number" step="0.00001" placeholder="auto when live; or enter e.g. USD→GBP 0.79">
-        <div class="hint">Converts pip value into your account currency.</div>
-      </div>
-
-      <button id="calc">Calculate Lot Size</button>
-      <div id="out" class="status" style="text-align:center"></div>
-
-      <div id="valueCard" class="valueCard" style="display:none"></div>
-      <div class="hint">FX pip size: 0.0001 (most) or 0.01 (JPY-quoted). Metals/crypto differ — enter manual pip value if needed.</div>
     </div>
 
-    <div class="side"><div class="icon coin" title="coin"></div></div>
+    <label for="risk">Risk Percentage (%)</label><input id="risk" type="number" placeholder="e.g. 2">
+
+    <label for="pair">Currency / Crypto / Metal Pair</label>
+    <input id="pair" list="pairs" placeholder="Type or pick e.g. GBP/JPY, BTC/USD, XAU/USD">
+    <datalist id="pairs">
+      <option value="EUR/USD"><option value="GBP/USD"><option value="USD/JPY"><option value="AUD/USD"><option value="USD/CAD">
+      <option value="USD/CHF"><option value="EUR/GBP"><option value="EUR/JPY"><option value="GBP/JPY"><option value="AUD/JPY">
+      <option value="EUR/AUD"><option value="EUR/CAD"><option value="GBP/AUD"><option value="CAD/JPY"><option value="NZD/USD"><option value="AUD/NZD">
+    </datalist>
+
+    <div class="toggle inlineFlex">
+      <input id="live" type="checkbox" checked>
+      <label for="live">Enable Live Price Auto-Fill (30s refresh)</label>
+      <span id="liveBadge" class="liveBadge" title="Live price indicator"></span>
+    </div>
+
+    <!-- fixed entry field -->
+    <label for="entry">Entry Price</label>
+    <div class="form-field" id="entryWrapper">
+      <input id="entry" type="number" step="0.00001" placeholder="auto">
+      <button id="retry" class="retry" title="Retry live price">🔄</button>
+    </div>
+    <div id="status" class="status"></div>
+    <div id="lastUpdated" class="lastUpdated"></div>
+
+    <div class="row">
+      <div><label for="sl">Stop Loss Price</label><input id="sl" type="number" step="0.00001" placeholder="e.g. 1.08300"></div>
+      <div><label for="tp">Take Profit (optional)</label><input id="tp" type="number" step="0.00001" placeholder="e.g. 1.09500"></div>
+    </div>
+
+    <button id="calc">Calculate Lot Size</button>
+    <div id="out" class="status" style="text-align:center"></div>
+    <div id="valueCard" class="valueCard" style="display:none"></div>
   </div>
 
+  <div class="side"><div class="icon coin" title="coin"></div></div>
+</div>
+
 <script>
-const DEBUG = true;
-function log(...args){ if(DEBUG) console.log("[FX v3.4]", ...args); }
-
-let timer=null, elapsed=0;
-const qs = id => document.getElementById(id);
-const status = (t,c='warn') => { const el=qs('status'); el.className='status '+c; el.textContent=t; };
-const nowTime = () => new Date().toLocaleTimeString();
-const badge = qs('liveBadge');
+const qs=id=>document.getElementById(id);
+const badge=qs('liveBadge');
 function setBadgeColor(sec){
-  // 0–10 green, 10–25 amber, 25–30 red
-  let color = getComputedStyle(document.documentElement).getPropertyValue('--green');
-  if(sec >= 25) color = getComputedStyle(document.documentElement).getPropertyValue('--red');
-  else if(sec >= 10) color = getComputedStyle(document.documentElement).getPropertyValue('--amber');
-  badge.style.backgroundColor = color.trim();
-  badge.style.boxShadow = `0 0 12px ${color.trim()}`;
-  badge.title = `Live indicator • ${sec}s since last update`;
+  let color=getComputedStyle(document.documentElement).getPropertyValue('--green');
+  if(sec>=25)color=getComputedStyle(document.documentElement).getPropertyValue('--red');
+  else if(sec>=10)color=getComputedStyle(document.documentElement).getPropertyValue('--amber');
+  badge.style.backgroundColor=color.trim();
+  badge.style.boxShadow=`0 0 12px ${color.trim()}`;
 }
 
-function parsePair(v){
-  if(!v) return null;
-  v=v.trim().toUpperCase().replace(/\\s+/g,'');
-  if(v.includes('/')){ const [b,q]=v.split('/'); return {b,q,code:`${b}/${q}`}; }
-  if(v.length===6){ return {b:v.slice(0,3), q:v.slice(3), code:`${v.slice(0,3)}/${v.slice(3)}`}; }
-  if(v.startsWith('XAU')||v.startsWith('XAG')){ return {b:v.slice(0,3), q:v.slice(3), code:`${v.slice(0,3)}/${v.slice(3)}`}; }
-  return null;
-}
-function isJPY(q){ return q==='JPY'; }
-function isMetal(b){ return b==='XAU'||b==='XAG'||b==='XPT'||b==='XPD'; }
-function isCrypto(b){ return ['BTC','ETH','SOL','XRP','ADA','DOGE','BNB','LTC','DOT'].includes(b); }
-function pipSize(b,q){ if(isMetal(b)) return 0.1; if(isCrypto(b)) return 1; return isJPY(q)?0.01:0.0001; }
-
-async function erapiRate(base, quote){
-  try{
-    const r = await fetch(`https://open.er-api.com/v6/latest/${base}`);
-    const j = await r.json();
-    if(j && j.result === "success" && j.rates && typeof j.rates[quote] === 'number'){
-      return j.rates[quote];
-    }
-  }catch(e){ log("erapi error", e); }
-  return null;
-}
-async function exhRate(base, quote){
-  try{
-    let r = await fetch(`https://api.exchangerate.host/convert?from=${base}&to=${quote}`);
-    let j = await r.json();
-    if(j && typeof j.result === 'number' && j.result>0) return j.result;
-  }catch(e){ log("exh error", e); }
-  return null;
-}
-async function getRate(base, quote) {
-  try {
-    const r = await fetch(`https://api.exchangerate.host/latest?base=${base}&symbols=${quote}`);
-    const j = await r.json();
-    if (j && j.rates && typeof j.rates[quote] === 'number') {
-      log("rate via exchangerate.host", base, quote, j.rates[quote]);
-      return j.rates[quote];
-    } else {
-      log("rate not found", base, quote, j);
-    }
-  } catch (e) {
-    log("fetch error", e);
-  }
-  return null;
+/* simulate your live update call: just hook into existing updateLive() later */
+function reactivePulse(){
+  const el=qs('entryWrapper');
+  el.classList.add('reactive-glow');
+  setTimeout(()=>el.classList.remove('reactive-glow'),450);
 }
 
-const cache = {}; // pair code -> last good rate
-
-async function updateLive(){
-  if(!qs('live').checked) return;
-  const p = parsePair(qs('pair').value);
-  if(!p){ status('Enter a valid pair like GBP/JPY','bad'); return; }
-  status('Fetching live price…');
-  const rate = await getRate(p.b, p.q);
-  if(rate){
-    cache[p.code] = rate;
-    const dec = (p.q==='JPY'||isMetal(p.b)) ? 3 : 5;
-    qs('entry').value = rate.toFixed(dec);
-    qs('entry').classList.add('fade'); setTimeout(()=>qs('entry').classList.remove('fade'), 450);
-    status(`✅ ${p.code} = ${rate.toFixed(dec)}  (${nowTime()})`,'ok');
-    qs('lastUpdated').textContent = `⏱ Last Updated: ${nowTime()}`;
-    elapsed = 0; setBadgeColor(elapsed);
-    if(!qs('sameCcy').checked){
-      const conv = await getRate(p.q, qs('acct').value);
-      if(conv) qs('conv').value = conv.toFixed(6);
-    }
-  }else if(cache[p.code]){
-    const dec = (p.q==='JPY'||isMetal(p.b)) ? 3 : 5;
-    qs('entry').value = cache[p.code].toFixed(dec);
-    status(`⚠️ Live failed — using cached ${p.code} = ${cache[p.code].toFixed(dec)} (${nowTime()})`,'warn');
-    qs('lastUpdated').textContent = `⏱ Last Updated: ${nowTime()} (cached)`;
-  }else{
-    status('Price not available for this pair right now.','bad');
-  }
-}
-
-function startTimer(){
-  if(timer) clearInterval(timer);
-  if(qs('live').checked){
-    timer = setInterval(() => {
-      elapsed += 1;
-      setBadgeColor(elapsed);
-      if(elapsed >= 30){
-        updateLive();
-      }
-    }, 1000);
-  }
-}
-
-async function showLotValues(p, acct, lotSize){
-  if(!p || !acct){ qs('valueCard').style.display='none'; return; }
-  if(isMetal(p.b) || isCrypto(p.b)){ qs('valueCard').style.display='none'; return; }
-  const baseToAcct = await getRate(p.b, acct);
-  if(!baseToAcct){ qs('valueCard').style.display='none'; return; }
-  const perLot = 100000 * baseToAcct;
-  const tradeVal = perLot * (Number(lotSize)||0);
-  const sym = acct==='GBP'?'£':acct==='USD'?'$':acct==='EUR'?'€':acct==='JPY'?'¥':acct==='AUD'?'A$':acct==='CAD'?'C$':acct==='NZD'?'NZ$':acct==='CHF'?'₣':'$';
-  qs('valueCard').innerHTML = `💷 1.00 lot = <b>${sym}${perLot.toLocaleString(undefined,{maximumFractionDigits:0})} ${acct}</b><br>
-                        💷 Your trade size (${(Number(lotSize)||0).toFixed(2)} lots) = <b>${sym}${tradeVal.toLocaleString(undefined,{maximumFractionDigits:0})} ${acct}</b>`;
-  qs('valueCard').style.display='block';
-}
-
-qs('pair').addEventListener('input', () => {
-  const p = parsePair(qs('pair').value);
-  const showManual = p && (isMetal(p.b)||isCrypto(p.b));
-  qs('pipManualBox').style.display = showManual ? 'block':'none';
-  updateLive(); startTimer();
-});
-qs('live').addEventListener('change', () => {
-  if(qs('live').checked){ updateLive(); startTimer(); }
-  else { if(timer) clearInterval(timer); status('Manual mode enabled.','warn'); }
-});
-qs('sameCcy').addEventListener('change', () => { qs('convBox').style.display = qs('sameCcy').checked ? 'none':'block'; if(qs('live').checked) updateLive(); });
-qs('retry').addEventListener('click', () => { elapsed = 29; setBadgeColor(elapsed); updateLive(); });
-
-qs('calc').addEventListener('click', async () => {
-  const bal = Number(qs('balance').value);
-  const riskPct = Number(qs('risk').value);
-  const entry = Number(qs('entry').value);
-  const sl = Number(qs('sl').value);
-  const p = parsePair(qs('pair').value);
-  const acct = qs('acct').value;
-  const out = qs('out');
-  if(!bal || !riskPct || !entry || !sl || !p){ out.className='status bad'; out.textContent='Please fill balance, risk, pair, entry & SL.'; return; }
-
-  const ps = pipSize(p.b, p.q);
-  const pips = Math.abs(entry - sl) / ps;
-
-  let pipValQuote;
-  if(isMetal(p.b) || isCrypto(p.b)){
-    pipValQuote = Number(qs('pipValManual').value || 0);
-    if(!pipValQuote){ out.className='status bad'; out.textContent='Enter pip value per lot for this metal/crypto.'; return; }
-  }else{
-    pipValQuote = isJPY(p.q) ? 1000 : 10;
-  }
-
-  let pipValAccount = pipValQuote;
-  if(!qs('sameCcy').checked){
-    let conv = Number(qs('conv').value);
-    if(!conv){ conv = await getRate(p.q, acct) || 0; qs('conv').value = conv ? conv.toFixed(6) : ''; }
-    if(!conv){ out.className='status bad'; out.textContent='Need conversion rate QUOTE→Account.'; return; }
-    pipValAccount = pipValQuote * conv;
-  }
-
-  const riskAmt = bal * (riskPct/100);
-  const lot = riskAmt / (pips * pipValAccount);
-  const sym = acct==='GBP'?'£':acct==='USD'?'$':acct==='EUR'?'€':acct==='JPY'?'¥':acct==='AUD'?'A$':acct==='CAD'?'C$':acct==='NZD'?'NZ$':acct==='CHF'?'₣':'$';
-  let html = `Pair <b>${p.code}</b> • Stop: <b>${pips.toFixed(1)} pips</b> (pip ${ps})<br>` +
-             `Pip value (1.00 lot, in account): <b>${pipValAccount.toFixed(4)}</b><br>` +
-             `Risking <b>${sym}${riskAmt.toFixed(2)}</b><br>` +
-             `Recommended Lot Size: <b>${lot.toFixed(2)} lots</b>`;
-  const tp = Number(qs('tp').value||0);
-  if(tp){ const rewardPips = Math.abs(tp-entry)/ps; const rr = rewardPips/pips; html += `<br>TP distance: <b>${rewardPips.toFixed(1)} pips</b> • R:R ≈ <b>${rr.toFixed(2)}</b>`; }
-  out.className='status ok'; out.innerHTML = html;
-
-  await showLotValues(p, acct, lot);
-});
-
-(function restore(){
-  try{
-    const s = JSON.parse(localStorage.getItem("fx_v34_state")||"{}");
-    if(s.balance) qs('balance').value = s.balance;
-    if(s.acct) qs('acct').value = s.acct;
-    if(s.risk) qs('risk').value = s.risk;
-    if(s.pair) qs('pair').value = s.pair;
-  }catch(_){}
-  setBadgeColor(0);
-  if(qs('pair').value) updateLive();
-  startTimer();
-})();
-['balance','acct','risk','pair'].forEach(id => {
-  qs(id).addEventListener('change', ()=>{
-    const s = {
-      balance: qs('balance').value,
-      acct: qs('acct').value,
-      risk: qs('risk').value,
-      pair: qs('pair').value
-    };
-    localStorage.setItem("fx_v34_state", JSON.stringify(s));
-  });
-});
+/* EXAMPLE usage: when entry value changes */
+qs('entry').addEventListener('input',reactivePulse);
+qs('retry').addEventListener('click',reactivePulse);
 </script>
 </body>
 </html>
