@@ -589,7 +589,9 @@ qs('calc').addEventListener('click', async () => {
   let pipValAccount = pipValQuote;
 
   const riskAmt = bal * (riskPct/100);
-  const lot = riskAmt / (pips * pipValAccount);
+  const leverage = 30; // ← Fixed leverage 1:30
+const lot = (riskAmt * leverage) / (pips * pipValAccount);
+
   const sym = acct==='GBP'?'£':acct==='USD'?'$':acct==='EUR'?'€':acct==='JPY'?'¥':acct==='AUD'?'A$':acct==='CAD'?'C$':acct==='NZD'?'NZ$':acct==='CHF'?'₣':'$';
   let html = `Pair <b>${p.code}</b> • Stop: <b>${pips.toFixed(1)} pips</b> (pip ${ps})<br>` +
              `Pip value (1.00 lot, in account): <b>${pipValAccount.toFixed(4)}</b><br>` +
