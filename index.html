@@ -3,124 +3,226 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FX-Lot-Calculator-LIVE-v3.5</title>
+<title>Lot Size Calculator — v3.6.7</title>
 <style>
   :root{
     --bg1:#021b3a; --bg2:#000810; --panel:#0b1020; --ink:#e8f1ff; --muted:#9db3d9;
-    --b1:#00b3ff; --b2:#003b8e; --ok:#73f7c6; --warn:#ffcc66; --bad:#ff6b6b;
+    --b1:#5aa2ff; --b2:#2d6fee; --ok:#73f7c6; --warn:#ffcc66; --bad:#ff6b6b;
     --green:#00ff66; --amber:#ffaa00; --red:#ff0033;
+    --glass-border: rgba(120,180,255,.18);
+    --radius:20px;
   }
   *{box-sizing:border-box}
+  html,body{height:100%}
   body{
-    margin:0; font-family:-apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--ink);
-    background: radial-gradient(1200px 700px at 12% 10%, #09264e 0%, #061737 55%, #031020 100%),
-                linear-gradient(180deg,var(--bg1),var(--bg2)); min-height:100vh;
+    margin:0; font-family:"SF Pro Text","SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; color:var(--ink);
+    background:
+      radial-gradient(1200px 700px at 12% 10%, #0a2b59 0%, #071b3e 55%, #031326 100%),
+      linear-gradient(180deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+  }
+  /* Header with gear */
+  .app-header{
+    position:relative; max-width:1100px; margin:30px auto 6px; padding:0 16px;
+    display:flex; align-items:center; justify-content:center;
   }
   h1{
-    margin:30px 0 10px; text-align:center; font-size:44px;
+    margin:0; text-align:center; font-size:44px; letter-spacing:.2px;
     background:linear-gradient(90deg,#a7dcff,#37d0ff,#6eb1ff);
     -webkit-background-clip:text; background-clip:text; color:transparent;
     text-shadow:0 0 18px rgba(55,208,255,.25);
   }
-  .wrap{max-width:1100px; margin:0 auto; padding:0 16px 48px;
+  .gear{
+    position:absolute; right:22px; top:-4px;
+    width:38px; height:38px; display:grid; place-items:center;
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border:1px solid var(--glass-border);
+    border-radius:16px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    color:#cfe6ff; cursor:pointer; box-shadow:0 12px 26px rgba(0,0,0,.35);
+  }
+  .gear:hover{ filter:brightness(1.1) }
+  .wrap{max-width:1100px; margin:0 auto 52px; padding:0 16px;
         display:grid; grid-template-columns:260px 1fr 260px; gap:24px; align-items:start;}
-  .side{height:520px; display:flex; align-items:center; justify-content:center; filter:drop-shadow(0 24px 40px rgba(0,0,0,.55)); position:relative;}
+
+  /* Side icons */
+  .side{height:540px; display:flex; align-items:center; justify-content:center; position:relative;
+        filter:drop-shadow(0 24px 40px rgba(0,0,0,.55));}
   .icon{width:220px; height:220px; background:linear-gradient(145deg, rgba(0,157,255,.35), rgba(0,59,142,.5));
         box-shadow: inset 0 0 35px rgba(0,0,0,.35), 0 18px 40px rgba(0,0,0,.35); border-radius:28px; position:relative; z-index:1;}
   .icon.calc:before,.icon.calc:after{content:""; position:absolute; left:15%; width:70%; height:12px; border-radius:999px;
         background:linear-gradient(90deg,#7fd6ff,#2fb8ff); top:64px; box-shadow:0 6px 18px rgba(55,208,255,.38)}
   .icon.calc:after{top:112px; width:50%; left:25%}
-  .icon.coin{border-radius:50%}
+  .icon.coin{border-radius:50%;
+    animation: coinPulse 3.6s ease-in-out infinite;
+    transform-origin:center center;
+    pointer-events:none;
+  }
   .icon.coin:before{content:""; position:absolute; inset:14px; border-radius:50%;
      border:6px solid rgba(160,220,255,.65); box-shadow:inset 0 0 24px rgba(55,208,255,.45)}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
-        border:1px solid rgba(90,150,220,.2); border-radius:20px; padding:22px; max-width:560px; margin:0 auto;
-        box-shadow:0 20px 40px rgba(0,0,0,.38); position:relative;}
+  @keyframes coinPulse{
+    0%{ transform: scale(1); filter: drop-shadow(0 10px 25px rgba(55,208,255,.20)); }
+    50%{ transform: scale(1.06); filter: drop-shadow(0 16px 40px rgba(55,208,255,.35)); }
+    100%{ transform: scale(1); filter: drop-shadow(0 10px 25px rgba(55,208,255,.20)); }
+  }
+  .coin.flash{ animation: coinFlash .7s ease-out 1; }
+  @keyframes coinFlash{
+    0%{ transform: scale(1.06); filter: drop-shadow(0 26px 60px rgba(55,208,255,.7)); }
+    100%{ transform: scale(1); filter: drop-shadow(0 10px 25px rgba(55,208,255,.2)); }
+  }
+
+  /* Card – Sonoma dark glass */
+  .card{
+    position:relative;
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    border:1px solid rgba(120,180,255,.18);
+    border-radius:24px;
+    padding:22px;
+    max-width:560px;
+    margin:0 auto;
+    box-shadow: 0 20px 50px rgba(0,0,0,.45);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    overflow:hidden;
+  }
+  .card::before{
+    content:""; position:absolute; inset:-10px; border-radius:24px; z-index:-1;
+    box-shadow: 0 0 100px rgba(55,208,255,.18), 0 0 180px rgba(0,0,0,.35);
+  }
+
   label{display:block; margin:12px 0 6px; color:#cfe6ff; font-weight:600}
   input, select{
-    width:100%; padding:12px 14px; background:#0a1528; color:#fff; border:1px solid rgba(120,180,255,.22);
-    border-radius:12px; outline:none; font-size:15px; transition:box-shadow .2s,border-color .2s;
-    box-shadow: 0 18px 28px -18px rgba(88,140,255,.45), inset 0 0 0 1px rgba(104,160,255,.18);
+    width:100%; padding:14px 16px; background:rgba(10,21,40,.85); color:#fff; border:1px solid rgba(120,180,255,.22);
+    border-radius:20px; outline:none; font-size:15px; transition:box-shadow .2s,border-color .2s, background .2s;
+    box-shadow: inset 0 0 0 1px rgba(104,160,255,.12);
   }
-  input:focus, select:focus{border-color:#37d0ff; box-shadow:0 0 0 4px rgba(55,208,255,.18), 0 18px 28px -18px rgba(88,140,255,.45), inset 0 0 0 1px rgba(104,160,255,.18)}
+  input:focus, select:focus{border-color:#37d0ff; background:rgba(10,21,40,.95);
+    box-shadow:0 0 0 8px rgba(55,208,255,.14), inset 0 0 0 1px rgba(104,160,255,.2)}
   .row{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+
   .status{font-size:13px; margin:6px 0; min-height:18px; text-align:left}
   .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
-  button{width:100%; padding:14px 16px; border:none; border-radius:14px; color:#fff; cursor:pointer; font-weight:700; font-size:16px;
-         background:linear-gradient(90deg,var(--b1),var(--b2)); box-shadow:0 10px 24px rgba(0,126,255,.35)}
-  button:hover{box-shadow:0 12px 28px rgba(0,126,255,.45)}
-  .input-with-btn{position:relative}
-  .retry{position:absolute; right:6px; top:6px; padding:8px 10px; border:none; border-radius:10px;
-         background:rgba(0,179,255,.14); color:#bfeaff; font-weight:700; cursor:pointer}
-  .retry:hover{background:rgba(0,179,255,.25)}
-  .hint{color:var(--muted); font-size:12px; margin-top:4px}
-  /* hide legacy badge support but keep element-safe */
-  .liveBadge{ display:none; }
+  button.primary{
+    width:100%; padding:14px 16px; border:none; border-radius:999px; color:#fff; cursor:pointer; font-weight:700; font-size:16px;
+    background:linear-gradient(90deg,var(--b1),var(--b2)); box-shadow:0 10px 24px rgba(0,126,255,.45);
+    margin-top:16px;
+  }
+  button.primary:hover{box-shadow:0 14px 30px rgba(0,126,255,.6)}
 
+  .hint{color:var(--muted); font-size:12px; margin-top:4px}
   .lastUpdated{font-size:12px; color:#a7b9db; margin-top:4px}
+  .srcTag{ display:block; margin-top:6px; font-size:11px; color:#a7b9db; opacity:.95; }
+  .disclaimer{ font-size:11px; color:#ff6b6b; font-style:italic; margin-top:4px; }
+
   .fade{animation:fadeIn .45s ease}
   @keyframes fadeIn{from{opacity:.4} to{opacity:1}}
   @media (max-width:980px){.wrap{grid-template-columns:1fr; gap:16px}.side{display:none}}
-  .valueCard{margin-top:10px; padding:10px; border-radius:12px; background:rgba(0,0,0,.25); border:1px solid rgba(120,180,255,.2)}
+  .valueCard{margin-top:10px; padding:12px; border-radius:20px; background:rgba(0,0,0,.25); border:1px solid rgba(120,180,255,.2)}
 
-  /* ---- New 4-section control panel ---- */
-  .mode-panel{
-    margin:12px 0 6px;
-    border-radius:14px;
-    padding:8px;
-    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
-    border:1px solid rgba(90,150,220,.2);
-    position:relative;
-    box-shadow: 0 16px 36px rgba(0,0,0,.35);
-  }
-  .mode-panel::after{ /* subtle ambient glow */
-    content:""; position:absolute; inset:-6px; border-radius:16px; pointer-events:none;
-    box-shadow: 0 0 40px rgba(55,208,255,.25);
-  }
-  .mode-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    grid-template-rows:1fr 1fr;
-    gap:8px;
-  }
-  .seg{
-    height:44px; border-radius:12px; border:1px solid rgba(120,180,255,.22);
-    background:#0a1528; color:#9db3d9; font-weight:700; font-size:14px; letter-spacing:.3px;
-    transition: all .2s ease; cursor:pointer;
-    box-shadow: inset 0 0 0 1px rgba(104,160,255,.1);
-  }
-  .seg.active{
-    color:#fff;
-    background:linear-gradient(90deg,var(--b1),var(--b2));
-    box-shadow: 0 10px 24px rgba(0,126,255,.35), inset 0 0 0 1px rgba(104,160,255,.25);
-    border-color: rgba(120,180,255,.35);
-  }
-  .seg:hover{filter:brightness(1.06)}
-
-  /* ---- Countdown ring overlay ---- */
+  /* Countdown ring */
   .ring-wrap{
     position:absolute; width:260px; height:260px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; z-index:5;
   }
   .ring-svg{
-    position:absolute; width:260px; height:260px; transform: rotate(90deg) scaleX(-1); /* CCW */
+    position:absolute; width:260px; height:260px; transform: rotate(90deg) scaleX(-1);
     filter: drop-shadow(0 0 18px rgba(0,0,0,.35));
+    pointer-events:none;
   }
-  .ring-bg{ stroke: rgba(160,220,255,.15); stroke-width:10; fill:none; }
-  .ring-fg{ stroke: var(--green); stroke-width:10; fill:none; stroke-linecap:round; transition: stroke .2s linear; }
-  .ring-text{
-    position:absolute; text-align:center; font-size:14px; color:#a7b9db; line-height:1.25; pointer-events:none;
-  }
+  .ring-text{ pointer-events:none; position:absolute; text-align:center; font-size:14px; color:#a7b9db; line-height:1.25; }
   .ring-text .time{ display:block; font-size:24px; color:#e8f1ff; margin-top:6px; text-shadow:0 0 10px rgba(55,208,255,.2); }
+  .ring-bg{ stroke: rgba(160,220,255,.15); stroke-width:10; fill:none; }
+  .ring-fg{ stroke: var(--green); stroke-width:10; fill:none; stroke-linecap:round; transition: stroke .2s linear, stroke-opacity .2s linear; }
 
+  .ring-flash{
+    position:absolute; inset:-8px; border-radius:50%;
+    box-shadow:0 0 0 0 rgba(55,208,255,.65), 0 0 40px 8px rgba(55,208,255,.35);
+    animation:ringFlashFade 900ms ease-out forwards;
+    pointer-events:none;
+  }
+  @keyframes ringFlashFade{
+    0%{ opacity:1; box-shadow:0 0 0 0 rgba(55,208,255,.75), 0 0 60px 12px rgba(55,208,255,.45); }
+    100%{ opacity:0; box-shadow:0 0 0 24px rgba(55,208,255,0), 0 0 0 0 rgba(55,208,255,0); }
+  }
+
+  /* Smart Toggle (wider, non-overlapping) */
+  .smart-toggle{
+    position:relative; width:240px; height:40px; margin:10px 0 0;
+    border-radius:999px; cursor:pointer; user-select:none;
+    background: linear-gradient(180deg, #2a3347, #1b2230);
+    box-shadow: inset 0 0 0 1px rgba(120,180,255,.22), 0 8px 20px rgba(0,0,0,.35);
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .smart-toggle.on{
+    background: linear-gradient(90deg, var(--b2), var(--b1));
+    box-shadow: 0 0 0 1px rgba(104,160,255,.2) inset, 0 12px 28px rgba(0,126,255,.45), 0 0 22px rgba(60,140,255,.55);
+  }
+  .smart-toggle .knob{
+    position:absolute; top:4px; left:4px; width:32px; height:32px; border-radius:50%;
+    background:linear-gradient(180deg,#ffffff,#e8eefc);
+    box-shadow: 0 6px 16px rgba(0,0,0,.35), inset 0 0 0 1px rgba(0,0,0,.06);
+    transition: transform .30s ease-in-out;
+    z-index:2;
+  }
+  .smart-toggle.on .knob{ transform: translateX(200px); }
+  .smart-toggle .label{
+    position:relative; z-index:1; font-weight:700; font-size:13px; letter-spacing:.2px;
+    color:#cfe0ff; transition: color .2s ease, opacity .2s ease;
+    padding:0 16px; text-align:center;
+  }
+  .smart-toggle.on .label{ color:#ffffff; }
+  .smart-toggle input{ display:none; }
+
+  /* Settings drawer (blurred glass) */
+  .drawer{
+    position:fixed; right:24px; top:70px; width:340px;
+    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    border:1px solid var(--glass-border);
+    border-radius:20px; padding:16px; color:#e8f1ff;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow:0 24px 60px rgba(0,0,0,.5);
+    transform: translateY(-18px); opacity:0; pointer-events:none;
+    transition: transform .25s ease, opacity .25s ease;
+    z-index:50;
+  }
+  .drawer.open{ transform: translateY(0); opacity:1; pointer-events:auto; }
+  .drawer h3{ margin:0 0 10px; font-size:16px; }
+  .drawer .rowc{ display:flex; gap:8px; }
+  .drawer input{
+    background:rgba(10,21,40,.85); color:#fff; border:1px solid rgba(120,180,255,.22); border-radius:14px; padding:10px 12px; flex:1;
+  }
+  .drawer button{
+    border:none; border-radius:14px; padding:10px 12px; background:linear-gradient(90deg,var(--b1),var(--b2));
+    color:#fff; font-weight:700; cursor:pointer; box-shadow:0 10px 24px rgba(0,126,255,.35);
+  }
+  .drawer .note{ font-size:12px; color:#9db3d9; margin-top:6px; }
+
+  /* Toast */
+  .toast{
+    position:fixed; right:18px; bottom:18px; min-width:220px; max-width:340px;
+    padding:12px 14px; border-radius:14px; background:rgba(20,60,20,.85); color:#d8ffe1;
+    border:1px solid rgba(90,180,120,.35); box-shadow:0 14px 34px rgba(0,0,0,.5);
+    backdrop-filter: blur(10px);
+    opacity:0; transform: translateY(12px); transition: opacity .25s ease, transform .25s ease; z-index:100;
+  }
+  .toast.show{ opacity:1; transform: translateY(0); }
+  .toast.warn{ background: rgba(70,60,10,.85); color:#fff5cc; border-color: rgba(200,160,60,.4); }
+  .toast.bad{ background: rgba(80,20,20,.85); color:#ffdede; border-color: rgba(200,80,80,.45); }
 </style>
 </head>
 <body>
-  <h1>Forex Lot Size Calculator</h1>
+  <div class="app-header">
+    <h1>Lot Size Calculator</h1>
+    <button id="gear" class="gear" title="Settings">⚙️</button>
+  </div>
+
   <div class="wrap">
+    <!-- LEFT: Square calc graphic -->
     <div class="side">
       <div class="icon calc" title="calculator"></div>
     </div>
 
+    <!-- CENTER: Card -->
     <div class="card">
       <div class="row">
         <div>
@@ -144,31 +246,26 @@
       <datalist id="pairs">
         <option value="EUR/USD"><option value="GBP/USD"><option value="USD/JPY"><option value="AUD/USD"><option value="USD/CAD"><option value="USD/CHF">
         <option value="EUR/GBP"><option value="EUR/JPY"><option value="GBP/JPY"><option value="AUD/JPY"><option value="EUR/AUD"><option value="EUR/CAD"><option value="GBP/AUD"><option value="CAD/JPY"><option value="NZD/USD"><option value="AUD/NZD">
+        <option value="GBP/CAD"><option value="EUR/CAD"><option value="AUD/CAD"><option value="GBP/NZD"><option value="EUR/NZD"><option value="USD/NOK"><option value="USD/SEK">
         <option value="USD/ZAR"><option value="USD/TRY"><option value="USD/MXN"><option value="USD/SGD"><option value="USD/HKD"><option value="EUR/TRY"><option value="GBP/ZAR"><option value="EUR/SGD">
         <option value="XAU/USD"><option value="XAG/USD"><option value="XAU/GBP"><option value="XAU/EUR">
         <option value="BTC/USD"><option value="ETH/USD"><option value="SOL/USD"><option value="XRP/USD"><option value="ADA/USD"><option value="DOGE/USD">
       </datalist>
 
-      <!-- Hidden legacy toggle state to keep logic compatible -->
-      <input id="live" type="checkbox" checked style="display:none">
-
-      <!-- NEW 4-section control panel (replaces old checkbox section) -->
-      <div id="modePanel" class="mode-panel">
-        <div class="mode-grid">
-          <button class="seg active" data-role="fetch" data-value="live">LIVE FETCH</button>
-          <button class="seg" data-role="fetch" data-value="manual">MANUAL FETCH</button>
-          <button class="seg active" data-role="refresh" data-value="auto">AUTO REFRESH</button>
-          <button class="seg" data-role="refresh" data-value="manual">MANUAL REFRESH</button>
-        </div>
-      </div>
-
+      <!-- Entry + NEW smart toggle -->
       <label for="entry">Entry Price</label>
-      <div class="input-with-btn">
-        <input id="entry" type="number" step="0.00001" placeholder="auto">
-        <button id="retry" class="retry" title="Retry live price">🔄</button>
+      <input id="entry" type="number" step="0.00001" placeholder="auto" disabled>
+
+      <div id="smartToggle" class="smart-toggle on" tabindex="0" role="switch" aria-checked="true" aria-label="Auto Fill toggle">
+        <input id="autoFill" type="checkbox" checked />
+        <div class="label"><span id="toggleText">Auto Fill</span></div>
+        <div class="knob"></div>
       </div>
+
       <div id="status" class="status"></div>
       <div id="lastUpdated" class="lastUpdated"></div>
+      <span id="srcTag" class="srcTag"></span>
+      <div class="disclaimer">Live prices are approximate — always verify with your broker before trading.</div>
 
       <div class="row">
         <div>
@@ -197,17 +294,17 @@
         <div class="hint">Converts pip value into your account currency.</div>
       </div>
 
-      <button id="calc">Calculate Lot Size</button>
+      <button id="calc" class="primary">Calculate Lot Size</button>
       <div id="out" class="status" style="text-align:center"></div>
 
       <div id="valueCard" class="valueCard" style="display:none"></div>
       <div class="hint">FX pip size: 0.0001 (most) or 0.01 (JPY-quoted). Metals/crypto differ — enter manual pip value if needed.</div>
     </div>
 
+    <!-- RIGHT: Circular countdown -->
     <div class="side">
-      <div class="icon coin" title="coin"></div>
-      <!-- Countdown ring overlay -->
-      <div class="ring-wrap" aria-hidden="true">
+      <div id="coin" class="icon coin" title="coin"></div>
+      <div id="ringWrap" class="ring-wrap" aria-label="Click to refresh now" title="Click to refresh now" tabindex="0">
         <svg class="ring-svg" viewBox="0 0 260 260">
           <circle class="ring-bg" cx="130" cy="130" r="110"></circle>
           <circle id="ringFg" class="ring-fg" cx="130" cy="130" r="110" stroke-dasharray="691" stroke-dashoffset="0"></circle>
@@ -220,33 +317,67 @@
     </div>
   </div>
 
-<script>
-const DEBUG = true;
-function log(...args){ if(DEBUG) console.log("[FX v3.5]", ...args); }
+  <!-- Settings Drawer -->
+  <div id="drawer" class="drawer" aria-live="polite">
+    <h3>API Settings</h3>
+    <div class="rowc">
+      <input id="tdKey" type="text" placeholder="Twelve Data API Key">
+      <button id="saveKey">Save</button>
+    </div>
+    <div class="note">Leave blank to use the built‑in (obfuscated) key. Your key is stored locally in your browser.</div>
+  </div>
 
-let timer=null, elapsed=0;
+  <div id="toast" class="toast">Saved</div>
+
+<script>
+const DEBUG = false;
+function log(...args){ if(DEBUG) console.log("[FX v3.6.7]", ...args); }
+
+// tiny built-in click using WebAudio (no network)
+function playClick(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = "square";
+    o.frequency.value = 1200;
+    o.connect(g); g.connect(ctx.destination);
+    const now = ctx.currentTime;
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(0.15, now + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+    o.start(now); o.stop(now + 0.08);
+  }catch(e){}
+}
+
+let lastUpdateTs = Date.now();
 const qs = id => document.getElementById(id);
 const status = (t,c='warn') => { const el=qs('status'); el.className='status '+c; el.textContent=t; };
 const nowTime = () => new Date().toLocaleTimeString();
+const setSrcTag = (t) => { const el = qs('srcTag'); el.textContent = t || ""; };
+function showToast(msg, type=''){ const t = qs('toast'); t.textContent = msg; t.className = 'toast '+(type||''); requestAnimationFrame(()=> t.classList.add('show')); setTimeout(()=> t.classList.remove('show'), 1800); }
 
-// state for new controls
-const state = {
-  liveFetch: true,
-  autoRefresh: true,
-  pairedMode: true
-};
+// Twelve Data key (obfuscated default)
+const TD_KEY_B64 = "MTNmOTJiODA3YzQ1NGQyZTk2ZDMyZTY2OTNmNGQyMzU="; // "13f92b807c454d2e96d32e6693f4d235"
+function getTDKey(){
+  const k = (localStorage.getItem("tdKey")||"").trim();
+  return k ? k : atob(TD_KEY_B64);
+}
 
-// ╭───────────────────────────────╮
-// │ Countdown ring + color lerp   │
-// ╰───────────────────────────────╯
+// Modes
+const state = { auto: true };
+
+// Countdown ring (smoother animation)
 const R = 110;
-const CIRC = Math.round(2 * Math.PI * R); // ~691
-const ring = document.getElementById('ringFg');
-const ringTime = document.getElementById('ringTime');
+const CIRC = Math.round(2 * Math.PI * R);
+const ring = qs('ringFg');
+const ringTime = qs('ringTime');
+const ringWrap = qs('ringWrap');
+const coin = qs('coin');
 
+function easeInOutQuad(t){ return t<0.5 ? 2*t*t : -1+(4-2*t)*t; }
 function lerp(a,b,t){ return a + (b-a)*t; }
 function mixColor(c1, c2, t){
-  // c1,c2 as [r,g,b]; return css rgb()
   const r = Math.round(lerp(c1[0], c2[0], t));
   const g = Math.round(lerp(c1[1], c2[1], t));
   const b = Math.round(lerp(c1[2], c2[2], t));
@@ -254,178 +385,186 @@ function mixColor(c1, c2, t){
 }
 const GREEN=[0,255,102], AMBER=[255,170,0], RED=[255,0,51];
 
-function setRing(sec){
-  // progress from 0..30; we want countdown CCW, so offset grows with sec
+function updateRing(sec){
   const rem = Math.max(0, 30 - sec);
-  ringTime.textContent = `00:${String(rem).padStart(2,'0')}`;
-
-  const progress = sec/30; // 0..1
-  // color: first half green->amber, second half amber->red
-  let color;
-  if(progress < 0.5){
-    color = mixColor(GREEN, AMBER, progress/0.5);
-  } else {
-    color = mixColor(AMBER, RED, (progress-0.5)/0.5);
-  }
+  ringTime.textContent = `00:${String(Math.ceil(rem)).padStart(2,'0')}`;
+  const t = easeInOutQuad(Math.min(1, Math.max(0, sec/30)));
+  const color = (t < 0.5)
+    ? mixColor(GREEN, AMBER, t/0.5)
+    : mixColor(AMBER, RED, (t-0.5)/0.5);
   ring.style.stroke = color;
-
-  // dashoffset: full circle is CIRC; CCW via transform on SVG, so we use increasing offset
+  ring.style.strokeOpacity = 0.9 - 0.4*t;
   const offset = Math.min(CIRC, Math.max(0, CIRC * (sec/30)));
   ring.setAttribute('stroke-dasharray', CIRC);
   ring.setAttribute('stroke-dashoffset', offset);
 }
 
-// kept for compatibility; now proxies to ring color
-function setBadgeColor(sec){
-  setRing(sec);
+function rafLoop(){
+  const now = Date.now();
+  let sec = (now - lastUpdateTs) / 1000;
+
+  if(state.auto){
+    if(sec >= 30){
+      updateLive();
+      sec = 0;
+    }
+    updateRing(sec);
+  } else {
+    updateRing(0);
+  }
+  requestAnimationFrame(rafLoop);
 }
 
-// ╭───────────────────────────────╮
-// │ Pair parser and rates         │
-// ╰───────────────────────────────╯
+// Pair parsing
 function parsePair(v){
   if(!v) return null;
-  v=v.trim().toUpperCase().replace(/\\s+/g,'');
+  v=v.trim().toUpperCase().replace(/\s+/g,'');
   if(v.includes('/')){ const [b,q]=v.split('/'); return {b,q,code:`${b}/${q}`}; }
   if(v.length===6){ return {b:v.slice(0,3), q:v.slice(3), code:`${v.slice(0,3)}/${v.slice(3)}`}; }
   if(v.startsWith('XAU')||v.startsWith('XAG')){ return {b:v.slice(0,3), q:v.slice(3), code:`${v.slice(0,3)}/${v.slice(3)}`}; }
   return null;
 }
+function isFX(b,q){ return !isMetal(b) && !isCrypto(b) && b && q; }
 function isJPY(q){ return q==='JPY'; }
 function isMetal(b){ return b==='XAU'||b==='XAG'||b==='XPT'||b==='XPD'; }
 function isCrypto(b){ return ['BTC','ETH','SOL','XRP','ADA','DOGE','BNB','LTC','DOT'].includes(b); }
 function pipSize(b,q){ if(isMetal(b)) return 0.1; if(isCrypto(b)) return 1; return isJPY(q)?0.01:0.0001; }
 
-async function erapiRate(base, quote){
+// Twelve Data quote
+async function twelveDataQuote(base, quote){
   try{
-    const r = await fetch(`https://open.er-api.com/v6/latest/${base}`);
+    const key = getTDKey();
+    // Twelve Data supports "EUR/USD" for forex, "BTC/USD", "XAU/USD"
+    const symbol = `${base}/${quote}`;
+    const url = `https://api.twelvedata.com/quote?symbol=${encodeURIComponent(symbol)}&apikey=${encodeURIComponent(key)}`;
+    status("Fetching from Twelve Data…","warn");
+    const r = await fetch(url, { cache:'no-store' });
     const j = await r.json();
-    if(j && j.result === "success" && j.rates && typeof j.rates[quote] === 'number'){
-      return j.rates[quote];
+    if(!j) return null;
+    if(j.status && j.status !== "ok" && j.code){ return null; }
+    // handle when response is under j (no status) but has fields
+    const bid = parseFloat(j.bid);
+    const ask = parseFloat(j.ask);
+    const price = parseFloat(j.price);
+    let px = null;
+    if(!isNaN(bid) && !isNaN(ask) && bid>0 && ask>0){ px = (bid+ask)/2; }
+    else if(!isNaN(price)){ px = price; }
+    if(px){
+      return { price:px, src:`Twelve Data (${symbol})`, t:new Date(j.timestamp? (Number(j.timestamp)*1000) : Date.now()) };
     }
-  }catch(e){ log("erapi error", e); }
+  }catch(e){}
   return null;
 }
-async function exhRate(base, quote){
+
+// ExchangeRate.host fallback
+async function exhPair(base, quote){
   try{
-    let r = await fetch(`https://api.exchangerate.host/convert?from=${base}&to=${quote}`);
-    let j = await r.json();
-    if(j && typeof j.result === 'number' && j.result>0) return j.result;
-  }catch(e){ log("exh error", e); }
-  return null;
-}
-async function getRate(base, quote){
-  let rate = await erapiRate(base, quote);
-  if(rate){ log("rate via erapi", base, quote, rate); return rate; }
-  rate = await exhRate(base, quote);
-  if(rate){ log("rate via exchangerate.host", base, quote, rate); return rate; }
-  log("rate unavailable", base, quote);
+    status("Fallback: ExchangeRate.host…","warn");
+    const r = await fetch(`https://api.exchangerate.host/latest?base=${base}&symbols=${quote}`, { cache:'no-store' });
+    const j = await r.json();
+    if(j && j.rates && typeof j.rates[quote] === 'number'){
+      return { price:j.rates[quote], src:`ExchangeRate.host (Daily)`, t:new Date(j.date || Date.now()) };
+    }
+  }catch(e){}
   return null;
 }
 
-const cache = {}; // pair code -> last good rate
+async function getLive(base, quote){
+  let res = await twelveDataQuote(base, quote);
+  if(res) return res;
+  res = await exhPair(base, quote);
+  if(res) return res;
+  return null;
+}
 
+const cache = {};
+
+// Update live
 async function updateLive(){
-  if(!state.liveFetch) return;
   const p = parsePair(qs('pair').value);
   if(!p){ status('Enter a valid pair like GBP/JPY','bad'); return; }
   status('Fetching live price…');
-  const rate = await getRate(p.b, p.q);
-  if(rate){
-    cache[p.code] = rate;
+  let res = null;
+
+  res = await getLive(p.b, p.q);
+
+  if(res && typeof res.price === 'number'){
+    cache[p.code] = res;
     const dec = (p.q==='JPY'||isMetal(p.b)) ? 3 : 5;
-    qs('entry').value = rate.toFixed(dec);
-    // reactive pulse
+    qs('entry').value = res.price.toFixed(dec);
     qs('entry').classList.add('fade'); setTimeout(()=>qs('entry').classList.remove('fade'), 450);
-    status(`✅ ${p.code} = ${rate.toFixed(dec)}  (${nowTime()})`,'ok');
+    status(`✅ ${p.code} = ${res.price.toFixed(dec)}  (${nowTime()})`,'ok');
     qs('lastUpdated').textContent = `⏱ Last Updated: ${nowTime()}`;
-    elapsed = 0; setBadgeColor(elapsed);
-    if(!qs('sameCcy').checked){
-      const conv = await getRate(p.q, qs('acct').value);
-      if(conv) qs('conv').value = conv.toFixed(6);
-    }
+    setSrcTag(`Source: ${res.src}`);
+    showToast(`Updated from ${res.src.includes('Twelve')?'Twelve Data':'ExchangeRate.host'}`,''); // green toast
+    lastUpdateTs = Date.now();
+    coin.classList.add('flash'); setTimeout(()=>coin.classList.remove('flash'), 700);
   }else if(cache[p.code]){
+    const last = cache[p.code];
     const dec = (p.q==='JPY'||isMetal(p.b)) ? 3 : 5;
-    qs('entry').value = cache[p.code].toFixed(dec);
-    status(`⚠️ Live failed — using cached ${p.code} = ${cache[p.code].toFixed(dec)} (${nowTime()})`,'warn');
+    qs('entry').value = last.price.toFixed(dec);
+    status(`⚠️ Live failed — using cached ${p.code} = ${last.price.toFixed(dec)} (${nowTime()})`,'warn');
+    setSrcTag(`Source: ${last.src} (cached)`);
     qs('lastUpdated').textContent = `⏱ Last Updated: ${nowTime()} (cached)`;
+    showToast(`Using cached ${p.code}`,'warn');
   }else{
     status('Price not available for this pair right now.','bad');
+    setSrcTag('Source: —');
+    showToast('Price not available','bad');
   }
 }
 
-function startTimer(){
-  if(timer) clearInterval(timer);
-  if(state.autoRefresh && state.liveFetch){
-    timer = setInterval(() => {
-      elapsed += 1;
-      setBadgeColor(elapsed);
-      if(elapsed >= 30){
-        updateLive();
-      }
-    }, 1000);
-  } else {
-    // still update ring visually even if not auto refreshing
-    timer = setInterval(() => {
-      // in manual modes, keep ring at 30 (no countdown)
-      setRing(0);
-    }, 1000);
-  }
+// Ring interactions
+function triggerRingRefresh(ev){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  const flash = document.createElement('div');
+  flash.className = 'ring-flash';
+  ringWrap.appendChild(flash);
+  setTimeout(()=> flash.remove(), 950);
+  updateLive();
 }
-
-// ---- Control panel logic ----
-const panel = document.getElementById('modePanel');
-panel.addEventListener('click', (ev) => {
-  const btn = ev.target.closest('.seg');
-  if(!btn) return;
-  const role = btn.getAttribute('data-role');
-  const val = btn.getAttribute('data-value');
-
-  if(state.pairedMode){
-    // first click pairs both rows
-    const live = (role === 'fetch') ? (val === 'live')
-                : (role === 'refresh') ? (val === 'auto')
-                : true;
-    state.liveFetch = live;
-    state.autoRefresh = live;
-    state.pairedMode = false; // future clicks manual
-  } else {
-    if(role === 'fetch'){
-      state.liveFetch = (val === 'live');
-    } else if(role === 'refresh'){
-      state.autoRefresh = (val === 'auto');
-    }
-  }
-  // reflect hidden legacy checkbox for compatibility
-  qs('live').checked = state.liveFetch;
-
-  // update UI classes
-  for(const el of panel.querySelectorAll('.seg')) el.classList.remove('active');
-  const sel = [
-    `[data-role="fetch"][data-value="${state.liveFetch?'live':'manual'}"]`,
-    `[data-role="refresh"][data-value="${state.autoRefresh?'auto':'manual'}"]`
-  ];
-  sel.forEach(s => panel.querySelector(s).classList.add('active'));
-
-  if(!state.autoRefresh || !state.liveFetch){
-    status('Manual mode enabled.','warn');
-  }
-  startTimer();
+ringWrap.addEventListener('click', triggerRingRefresh);
+ringWrap.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' || e.key === ' '){ triggerRingRefresh(e); }
 });
 
-// Original listeners adapted
+// Smart toggle logic
+const smartToggle = qs('smartToggle');
+const autoFill = qs('autoFill');
+const toggleText = qs('toggleText');
+function setModeByToggle(play=true){
+  const on = autoFill.checked;
+  smartToggle.classList.toggle('on', on);
+  smartToggle.setAttribute('aria-checked', on ? 'true' : 'false');
+  toggleText.textContent = on ? 'Auto Fill' : 'Manual Entry';
+  state.auto = on;
+  // Enable/disable entry editing
+  qs('entry').disabled = on;
+  status(on ? 'Auto Fill enabled.' : 'Manual Entry mode — click the circle to refresh.', on ? 'ok' : 'warn');
+  if(play) playClick();
+  if(on){ updateLive(); }
+}
+smartToggle.addEventListener('click', ()=>{
+  autoFill.checked = !autoFill.checked;
+  setModeByToggle();
+});
+smartToggle.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter' || e.key===' '){
+    e.preventDefault();
+    autoFill.checked = !autoFill.checked;
+    setModeByToggle();
+  }
+});
+
+// Pair input changes
 qs('pair').addEventListener('input', () => {
   const p = parsePair(qs('pair').value);
   const showManual = p && (isMetal(p.b)||isCrypto(p.b));
   qs('pipManualBox').style.display = showManual ? 'block':'none';
-  if(state.liveFetch){
-    updateLive();
-    startTimer();
-  }
+  if(state.auto){ updateLive(); }
 });
-qs('retry').addEventListener('click', () => { elapsed = 29; setBadgeColor(elapsed); updateLive(); });
 
-// Lot size calculation (unchanged)
+// Lot size calculation
 qs('calc').addEventListener('click', async () => {
   const bal = Number(qs('balance').value);
   const riskPct = Number(qs('risk').value);
@@ -448,12 +587,6 @@ qs('calc').addEventListener('click', async () => {
   }
 
   let pipValAccount = pipValQuote;
-  if(!qs('sameCcy').checked){
-    let conv = Number(qs('conv').value);
-    if(!conv){ conv = await getRate(p.q, acct) || 0; qs('conv').value = conv ? conv.toFixed(6) : ''; }
-    if(!conv){ out.className='status bad'; out.textContent='Need conversion rate QUOTE→Account.'; return; }
-    pipValAccount = pipValQuote * conv;
-  }
 
   const riskAmt = bal * (riskPct/100);
   const lot = riskAmt / (pips * pipValAccount);
@@ -472,8 +605,10 @@ qs('calc').addEventListener('click', async () => {
 async function showLotValues(p, acct, lotSize){
   if(!p || !acct){ qs('valueCard').style.display='none'; return; }
   if(isMetal(p.b) || isCrypto(p.b)){ qs('valueCard').style.display='none'; return; }
-  const baseToAcct = await getRate(p.b, acct);
-  if(!baseToAcct){ qs('valueCard').style.display='none'; return; }
+  // indicative conversion
+  const res = await exhPair(p.b, acct);
+  if(!res){ qs('valueCard').style.display='none'; return; }
+  const baseToAcct = res.price;
   const perLot = 100000 * baseToAcct;
   const tradeVal = perLot * (Number(lotSize)||0);
   const sym = acct==='GBP'?'£':acct==='USD'?'$':acct==='EUR'?'€':acct==='JPY'?'¥':acct==='AUD'?'A$':acct==='CAD'?'C$':acct==='NZD'?'NZ$':acct==='CHF'?'₣':'$';
@@ -482,8 +617,27 @@ async function showLotValues(p, acct, lotSize){
   qs('valueCard').style.display='block';
 }
 
+// Settings drawer
+const gear = qs('gear');
+const drawer = qs('drawer');
+const tdInput = qs('tdKey');
+const saveKey = qs('saveKey');
+gear.addEventListener('click', ()=>{
+  const k = (localStorage.getItem("tdKey")||"");
+  tdInput.value = k;
+  drawer.classList.toggle('open');
+});
+saveKey.addEventListener('click', ()=>{
+  const v = tdInput.value.trim();
+  if(v){ localStorage.setItem("tdKey", v); }
+  else { localStorage.removeItem("tdKey"); }
+  drawer.classList.remove('open');
+  showToast(v ? "✅ Twelve Data key saved" : "Using built-in obfuscated key","");
+  status(v ? "Saved Twelve Data API key." : "Using built-in key.", v ? "ok":"warn");
+});
+
 // init
-(function restore(){
+(function init(){
   try{
     const s = JSON.parse(localStorage.getItem("fx_v34_state")||"{}");
     if(s.balance) qs('balance').value = s.balance;
@@ -491,21 +645,12 @@ async function showLotValues(p, acct, lotSize){
     if(s.risk) qs('risk').value = s.risk;
     if(s.pair) qs('pair').value = s.pair;
   }catch(_){}
-  setBadgeColor(0);
-  if(qs('pair').value && state.liveFetch) updateLive();
-  startTimer();
+  // ensure Auto Fill ON at startup
+  autoFill.checked = true;
+  setModeByToggle(false);
+  requestAnimationFrame(rafLoop);
+  if(qs('pair').value){ updateLive(); }
 })();
-['balance','acct','risk','pair'].forEach(id => {
-  qs(id).addEventListener('change', ()=>{
-    const s = {
-      balance: qs('balance').value,
-      acct: qs('acct').value,
-      risk: qs('risk').value,
-      pair: qs('pair').value
-    };
-    localStorage.setItem("fx_v34_state", JSON.stringify(s));
-  });
-});
 </script>
 </body>
 </html>
